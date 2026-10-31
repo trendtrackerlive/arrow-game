@@ -43,7 +43,7 @@
     <script>
         let level = 1;
         let moves = 0;
-        let gridSize = 6; // Denser grid with lots of arrows
+        let gridSize = 6;
         let gridData = [];
         const arrows = ['⬆️', '➡️', '⬇️', '⬅️'];
         const dx = [0, 1, 0, -1];
@@ -56,9 +56,7 @@
             document.getElementById('win-msg').style.display = 'none';
             document.getElementById('next-btn').style.display = 'none';
             
-            // Scale grid size with levels (from 6x6 up to 9x9)
             gridSize = Math.min(6 + Math.floor((level - 1) / 2), 9);
-            
             generatePuzzle();
             renderGrid();
         }
@@ -100,7 +98,6 @@
             moves++;
             document.getElementById('move-count').innerText = moves;
 
-            // Follow arrow direction until it hits edge or another cleared cell
             let currR = r;
             let currC = c;
             let d = gridData[r][c].dir;
@@ -120,7 +117,7 @@
 
         function checkWin() {
             let allCleared = true;
-            for (let r = 0.0; r < gridSize; r++) {
+            for (let r = 0; r < gridSize; r++) {
                 for (let c = 0; c < gridSize; c++) {
                     if (!gridData[r][c].cleared) {
                         allCleared = false;
