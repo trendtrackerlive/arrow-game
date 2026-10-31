@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrow Puzzle Game - Trend Tracker Live</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+        body { background: #0f172a; color: #f8fafc; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 100vh; padding: 10px; }
+        .game-container { background: #1e293b; border: 1px solid #334155; border-radius: 16px; padding: 20px; width: 100%; max-width: 500px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.5); text-align: center; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header h1 { font-size: 1.2rem; color: #38bdf8; }
+        .stats { display: flex; gap: 15px; font-size: 0.9rem; background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; }
+        .grid { display: grid; gap: 4px; background: #0f172a; padding: 10px; border-radius: 12px; margin-bottom: 20px; justify-content: center; border: 2px solid #334155; }
+        .cell { aspect-ratio: 1; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: 6px; cursor: pointer; user-select: none; transition: all 0.15s ease; color: #f8fafc; }
+        .cell:hover { background: #475569; transform: scale(1.05); }
+        .cell.cleared { background: #065f46; color: #34d399; opacity: 0.4; pointer-events: none; }
+        .controls { display: flex; gap: 10px; justify-content: center; }
+        button { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 8px; cursor: pointer; font-weight: 600; font-size: 0.95rem; transition: background 0.2s; }
+        button:hover { background: #1d4ed8; }
+        button.secondary { background: #475569; }
+        button.secondary:hover { background: #334155; }
+        .win-message { margin-top: 15px; font-size: 1.1rem; color: #34d399; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="header">
+            <h1>Arrow Puzzle</h1>
+            <div class="stats">
+                <div>Lvl: <span id="level-num">1</span></div>
+                <div>Moves: <span id="move-count">0</span></div>
+            </div>
+        </div>
+        <div id="grid" class="grid"></div>
+        <div class="win-message" id="win-msg">🎉 Level Cleared! Next level loading...</div>
+        <div class="controls">
+            <button onclick="initGame()">Reset Level</button>
+            <button class="secondary" onclick="nextLevel()" id="next-btn" style="display:none;">Next Level</button>
+        </div>
+    </div>
+
+    <script>
+        let level = 1;
+        let moves = 0;
+        let gridSize = 6; // Denser grid with lots of arrows
+        let gridData = [];
+        const arrows = ['⬆️', '➡️', '⬇️', '⬅️'];
+        const dx = [0, 1, 0, -1];
+        const dy = [-1, 0, 1, 0];
+
+        function initGame() {
+            moves = 0;
+            document.getElementById('move-count').innerText = moves;
+            document.getElementById('level-num').innerText = level;
+            document.getElementById('win-msg').style.display = 'none';
+            document.getElementById('next-btn').style.display = 'none';
+            
+            // Scale grid size with levels (from 6x6 up to 9x9)
+            gridSize = Math.min(6 + Math.floor((level - 1) / 2), 9);
+            
+            generatePuzzle();
+            renderGrid();
+        }
+
+        function generatePuzzle() {
+            gridData = Array(gridSize).fill(0).map(() => Array(gridSize).fill(0));
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    gridData[r][c] = {
+                        dir: Math.floor(Math.random() * 4),
+                        cleared: false
+                    };
+                }
+            }
+        }
+
+        function renderGrid() {
+            const gridEl = document.getElementById('grid');
+            gridEl.style.gridTemplateColumns = `repeat(${gridSize}, 1fr)`;
+            gridEl.innerHTML = '';
+
+            for (let r = 0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    const cell = document.createElement('div');
+                    cell.className = 'cell';
+                    if (gridData[r][c].cleared) {
+                        cell.classList.add('cleared');
+                    }
+                    cell.innerHTML = arrows[gridData[r][c].dir];
+                    cell.onclick = () => handleCellClick(r, c);
+                    gridEl.appendChild(cell);
+                }
+            }
+        }
+
+        function handleCellClick(r, c) {
+            if (gridData[r][c].cleared) return;
+            
+            moves++;
+            document.getElementById('move-count').innerText = moves;
+
+            // Follow arrow direction until it hits edge or another cleared cell
+            let currR = r;
+            let currC = c;
+            let d = gridData[r][c].dir;
+
+            while (true) {
+                gridData[currR][currC].cleared = true;
+                currR += dy[d];
+                currC += dx[d];
+
+                if (currR < 0 || currR >= gridSize || currC < 0 || currC >= gridSize) break;
+                if (gridData[currR][currC].cleared) break;
+            }
+
+            renderGrid();
+            checkWin();
+        }
+
+        function checkWin() {
+            let allCleared = true;
+            for (let r = 0.0; r < gridSize; r++) {
+                for (let c = 0; c < gridSize; c++) {
+                    if (!gridData[r][c].cleared) {
+                        allCleared = false;
+                        break;
+                    }
+                }
+            }
+
+            if (allCleared) {
+                document.getElementById('win-msg').style.display = 'block';
+                document.getElementById('next-btn').style.display = 'block';
+            }
+        }
+
+        function nextLevel() {
+            level++;
+            initGame();
+        }
+
+        initGame();
+    </script>
+</body>
+</html>
