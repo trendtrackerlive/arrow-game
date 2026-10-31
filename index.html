@@ -12,7 +12,7 @@
         .header h1 { font-size: 1.2rem; color: #38bdf8; }
         .stats { display: flex; gap: 15px; font-size: 0.9rem; background: #0f172a; padding: 8px 12px; border-radius: 8px; border: 1px solid #334155; }
         .grid { display: grid; gap: 4px; background: #0f172a; padding: 10px; border-radius: 12px; margin-bottom: 20px; justify-content: center; border: 2px solid #334155; }
-        .cell { aspect-ratio: 1; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; border-radius: 6px; cursor: pointer; user-select: none; transition: all 0.15s ease; color: #f8fafc; }
+        .cell { aspect-ratio: 1; background: #334155; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; border-radius: 6px; cursor: pointer; user-select: none; transition: all 0.15s ease; color: #f8fafc; }
         .cell:hover { background: #475569; transform: scale(1.05); }
         .cell.cleared { background: #065f46; color: #34d399; opacity: 0.4; pointer-events: none; }
         .controls { display: flex; gap: 10px; justify-content: center; }
@@ -43,7 +43,7 @@
     <script>
         let level = 1;
         let moves = 0;
-        let gridSize = 6;
+        let gridSize = 7; // Bohat saare arrows ke sath dense grid
         let gridData = [];
         const arrows = ['⬆️', '➡️', '⬇️', '⬅️'];
         const dx = [0, 1, 0, -1];
